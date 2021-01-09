@@ -19,6 +19,7 @@ export const orderSummary = props => {
 				<ul>
 					{ingredientSummary}
 				</ul>
+				<p><strong>Total Prive: {context.price.toFixed(2)}$</strong></p>
 				<p>Continue to Checkout?</p>
 				<Button btnType="Danger" onClick={context.onClick}>CANCEL</Button>
 				<Button btnType="Success" onClick={props.onClick} >CONTINUE</Button>

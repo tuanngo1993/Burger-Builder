@@ -15,7 +15,7 @@ const controls = [
 export const buildControls = props => <Context.Consumer>
 	{
 		context => <div className={classes.BuildControls}>
-			<p>Current Price: <strong>{props.price.toFixed(2)}$</strong></p>
+			<p>Current Price: <strong>{context.price.toFixed(2)}$</strong></p>
 			{
 				controls.map(ctrl => <BuildControl
 					disable={props.disableInfo[ctrl.type]}

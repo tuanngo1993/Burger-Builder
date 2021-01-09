@@ -94,7 +94,8 @@ export class BurgerBuilder extends React.Component {
 			value={{
 				onAdd: this.handleAddIngredient,
 				onRemove: this.handleRemoveIngredient,
-				onClick: this.handleOpenOrderModal
+				onClick: this.handleOpenOrderModal,
+				price: this.state.totalPrice
 			}}
 		>
 			<Modal show={this.state.order}>
@@ -103,7 +104,6 @@ export class BurgerBuilder extends React.Component {
 			<Burger ingredients={this.state.ingredients} />
 			<BuildControls
 				disableInfo={disableInfo}
-				price={this.state.totalPrice}
 				purchasable={this.state.purchasable}
 			/>
 		</Context.Provider>;

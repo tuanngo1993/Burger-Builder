@@ -3,5 +3,6 @@ import React from "react";
 export const context = React.createContext({
 	onAdd: () => {},
 	onRemove: () => {},
-	onClick: () => {}
+	onClick: () => {},
+	price: 0
 });
