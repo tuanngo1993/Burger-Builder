@@ -13,6 +13,6 @@ const controls = [
 
 export const buildControls = props => <div className={classes.BuildControls}>
 	{
-		controls.map(ctrl => <BuildControl key={ctrl.label} label={ctrl.label} />)
+		controls.map(ctrl => <BuildControl type={ctrl.type} key={ctrl.label} label={ctrl.label} />)
 	}
 </div>;
