@@ -22,30 +22,56 @@ export class BurgerBulder extends React.Component {
 				cheese: 0,
 				meat: 0
 			},
-			totalPrice: 4
+			totalPrice: 0
 		};
 
 		this.handleAddIngredient = this.handleAddIngredient.bind(this);
+		this.handleRemoveIngredient = this.handleRemoveIngredient.bind(this);
 	}
 
-	handleAddIngredient(type) {
+	handleIngredient(type, action) {
 		const oldCount = this.state.ingredients[type];
-		const updatedCount = oldCount + 1;
+		let updatedCount;
+		if(action === "add") {
+			updatedCount = oldCount + 1;
+		} else if (action === "remove") {
+			if (oldCount <= 0) return;
+			updatedCount = oldCount - 1;
+		}
 		const updatedIngredients = {...this.state.ingredients};
 		updatedIngredients[type] = updatedCount;
 
-		const priceAddition = INGREDIENT_PRICE[type];
+		const priceIngredient = INGREDIENT_PRICE[type];
 		const oldPrice = this.state.totalPrice;
-		const updatedPrice = oldPrice + priceAddition;
+		let updatedPrice;
+		if(action === "add") {
+			updatedPrice = oldPrice + priceIngredient;
+		} else if (action === "remove") {
+			updatedPrice = oldPrice - priceIngredient;
+		}
 
 		this.setState({ingredients: updatedIngredients, totalPrice: updatedPrice});
 	}
 
+	handleAddIngredient(type) {
+		this.handleIngredient(type, "add");
+	}
+
+	handleRemoveIngredient(type) {
+		this.handleIngredient(type, "remove");
+	}
+
 	render() {
+		const disableInfo = {...this.state.ingredients};
+
+		for(let key in disableInfo) {
+			disableInfo[key] = disableInfo[key] <= 0;
+		}
+
 		return <Aux>
 			<Burger ingredients={this.state.ingredients} />
-			<Context.Provider value={{onAdd: this.handleAddIngredient}}>
-				<BuildControls />
+			<Context.Provider value={{ onAdd: this.handleAddIngredient, onRemove: this.handleRemoveIngredient }}>
+				<BuildControls disableInfo={disableInfo} />
 			</Context.Provider>
 		</Aux>;
 	}
