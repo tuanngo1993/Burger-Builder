@@ -4,7 +4,7 @@ import { burger as Burger } from "../../components/Burger/Burger";
 import { buildControls as BuildControls } from "../../components/Burger/BuildControls/BuildControls";
 import { context as Context } from "../../hoc/context";
 import { modal as Modal } from "../../components/UI/Modal/Modal";
-import { OrderSummary } from "../../components/Burger/OrderSummary/OrderSummary";
+import { orderSummary as OrderSummary } from "../../components/Burger/OrderSummary/OrderSummary";
 
 const INGREDIENT_PRICE = {
 	salad: 0.5,

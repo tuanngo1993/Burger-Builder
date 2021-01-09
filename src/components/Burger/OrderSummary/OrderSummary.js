@@ -4,7 +4,7 @@ import { aux as Aux } from "../../../hoc/Aux";
 import {button as Button} from "../../UI/Button/Button";
 import {context as Context} from "../../../hoc/context";
 
-export const OrderSummary = props => {
+export const orderSummary = props => {
 	React.useEffect(() => {console.log("Order Summary")});
 
 	const ingredientSummary = Object.keys(props.ingredients).map(
