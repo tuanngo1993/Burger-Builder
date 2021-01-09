@@ -71,7 +71,7 @@ export class BurgerBulder extends React.Component {
 		return <Aux>
 			<Burger ingredients={this.state.ingredients} />
 			<Context.Provider value={{ onAdd: this.handleAddIngredient, onRemove: this.handleRemoveIngredient }}>
-				<BuildControls disableInfo={disableInfo} />
+				<BuildControls disableInfo={disableInfo} price={this.state.totalPrice} />
 			</Context.Provider>
 		</Aux>;
 	}
