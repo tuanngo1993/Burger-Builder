@@ -4,7 +4,7 @@ import { burger as Burger } from "../../components/Burger/Burger";
 import { buildControls as BuildControls } from "../../components/Burger/BuildControls/BuildControls";
 import { context as Context } from "../../hoc/context";
 import { modal as Modal } from "../../components/UI/Modal/Modal";
-import { orderSummary as OrderSummary } from "../../components/Burger/OrderSummary/OrderSummary";
+import { OrderSummary } from "../../components/Burger/OrderSummary/OrderSummary";
 
 const INGREDIENT_PRICE = {
 	salad: 0.5,
@@ -25,12 +25,12 @@ export class BurgerBuilder extends React.Component {
 			},
 			totalPrice: 0,
 			purchasable: false,
-			order: false
+			ordering: false
 		};
 
 		this.handleAddIngredient = this.handleAddIngredient.bind(this);
 		this.handleRemoveIngredient = this.handleRemoveIngredient.bind(this);
-		this.handleOpenOrderModal = this.handleOpenOrderModal.bind(this);
+		this.handleToggleOrderModal = this.handleToggleOrderModal.bind(this);
 		this.handleOrderContinue = this.handleOrderContinue.bind(this);
 	}
 
@@ -38,8 +38,8 @@ export class BurgerBuilder extends React.Component {
 		alert("Continue!!!");
 	}
 
-	handleOpenOrderModal() {
-		this.setState((prevState, _) => ({order: !prevState.order}));
+	handleToggleOrderModal() {
+		this.setState((prevState, _) => ({ordering: !prevState.ordering}));
 	}
 
 	handleUpdatePurchase(ingredients) {
@@ -94,12 +94,13 @@ export class BurgerBuilder extends React.Component {
 			value={{
 				onAdd: this.handleAddIngredient,
 				onRemove: this.handleRemoveIngredient,
-				onClick: this.handleOpenOrderModal,
-				price: this.state.totalPrice
+				onClick: this.handleToggleOrderModal,
+				price: this.state.totalPrice,
+				show: this.state.ordering
 			}}
 		>
-			<Modal show={this.state.order}>
-				<OrderSummary ingredients={this.state.ingredients} onClick={this.handleOrderContinue} />
+			<Modal>
+				<OrderSummary key={1} ingredients={this.state.ingredients} onClick={this.handleOrderContinue} />
 			</Modal>
 			<Burger ingredients={this.state.ingredients} />
 			<BuildControls
