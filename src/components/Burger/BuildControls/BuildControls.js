@@ -3,6 +3,7 @@ import React from "react";
 import classes from "./BuildControls.css";
 
 import {buildControl as BuildControl} from "./BuildControl/BuildControl";
+import {context as Context} from "../../../hoc/context";
 
 const controls = [
 	{label: "Salad", type: "salad"},
@@ -11,13 +12,24 @@ const controls = [
 	{label: "Meat", type: "meat"}
 ];
 
-export const buildControls = props => <div className={classes.BuildControls}>
-	<p>Current Price: <strong>{props.price.toFixed(2)}$</strong></p>
+export const buildControls = props => <Context.Consumer>
 	{
-		controls.map(ctrl => <BuildControl
-			disable={props.disableInfo[ctrl.type]}
-			type={ctrl.type} key={ctrl.label}
-			label={ctrl.label} 
-		/>)
+		context => <div className={classes.BuildControls}>
+			<p>Current Price: <strong>{props.price.toFixed(2)}$</strong></p>
+			{
+				controls.map(ctrl => <BuildControl
+					disable={props.disableInfo[ctrl.type]}
+					type={ctrl.type} key={ctrl.label}
+					label={ctrl.label} 
+				/>)
+			}
+			<button
+				className={classes.OrderButton}
+				disabled={!props.purchasable}
+				onClick={context.onClick}
+			>
+				ORDER BUTTON
+			</button>
+		</div>
 	}
-</div>;
+</Context.Consumer>;

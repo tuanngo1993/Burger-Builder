@@ -1,9 +1,10 @@
 import React from "react";
 
-import {aux as Aux} from "../../hoc/Aux";
 import { burger as Burger } from "../../components/Burger/Burger";
 import { buildControls as BuildControls } from "../../components/Burger/BuildControls/BuildControls";
 import { context as Context } from "../../hoc/context";
+import { modal as Modal } from "../../components/UI/Modal/Modal";
+import { orderSummary as OrderSummary } from "../../components/Burger/OrderSummary/OrderSummary";
 
 const INGREDIENT_PRICE = {
 	salad: 0.5,
@@ -11,7 +12,7 @@ const INGREDIENT_PRICE = {
 	meat: 1.2,
 	bacon: 0.8
 };
-export class BurgerBulder extends React.Component {
+export class BurgerBuilder extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -22,11 +23,31 @@ export class BurgerBulder extends React.Component {
 				cheese: 0,
 				meat: 0
 			},
-			totalPrice: 0
+			totalPrice: 0,
+			purchasable: false,
+			order: false
 		};
 
 		this.handleAddIngredient = this.handleAddIngredient.bind(this);
 		this.handleRemoveIngredient = this.handleRemoveIngredient.bind(this);
+		this.handleOpenOrderModal = this.handleOpenOrderModal.bind(this);
+		this.handleOrderContinue = this.handleOrderContinue.bind(this);
+	}
+
+	handleOrderContinue() {
+		alert("Continue!!!");
+	}
+
+	handleOpenOrderModal() {
+		this.setState((prevState, _) => ({order: !prevState.order}));
+	}
+
+	handleUpdatePurchase(ingredients) {
+		const sum = Object.keys(ingredients).map(
+			ingredient => ingredients[ingredient]
+		).reduce((sum, price) => sum + price, 0);
+
+		this.setState({purchasable: sum > 0});
 	}
 
 	handleIngredient(type, action) {
@@ -51,6 +72,7 @@ export class BurgerBulder extends React.Component {
 		}
 
 		this.setState({ingredients: updatedIngredients, totalPrice: updatedPrice});
+		this.handleUpdatePurchase(updatedIngredients);
 	}
 
 	handleAddIngredient(type) {
@@ -68,11 +90,22 @@ export class BurgerBulder extends React.Component {
 			disableInfo[key] = disableInfo[key] <= 0;
 		}
 
-		return <Aux>
+		return <Context.Provider
+			value={{
+				onAdd: this.handleAddIngredient,
+				onRemove: this.handleRemoveIngredient,
+				onClick: this.handleOpenOrderModal
+			}}
+		>
+			<Modal show={this.state.order}>
+				<OrderSummary ingredients={this.state.ingredients} onClick={this.handleOrderContinue} />
+			</Modal>
 			<Burger ingredients={this.state.ingredients} />
-			<Context.Provider value={{ onAdd: this.handleAddIngredient, onRemove: this.handleRemoveIngredient }}>
-				<BuildControls disableInfo={disableInfo} price={this.state.totalPrice} />
-			</Context.Provider>
-		</Aux>;
+			<BuildControls
+				disableInfo={disableInfo}
+				price={this.state.totalPrice}
+				purchasable={this.state.purchasable}
+			/>
+		</Context.Provider>;
 	}
 }
