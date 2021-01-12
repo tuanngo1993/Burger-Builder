@@ -5,8 +5,6 @@ import {button as Button} from "../../UI/Button/Button";
 import {context as Context} from "../../../hoc/context";
 
 export const orderSummary = props => {
-	React.useEffect(() => {console.log("Order Summary")});
-
 	const ingredientSummary = Object.keys(props.ingredients).map(
 		ingredient => <li key={ingredient}>
 			<span style={{textTransform: "capitalize"}}>{ingredient}</span>: {props.ingredients[ingredient]}

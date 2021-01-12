@@ -6,9 +6,7 @@ import { aux as Aux } from "../../../hoc/Aux";
 import { backdrop as Backdrop } from "../Backdrop/Backdrop";
 import {context as Context} from "../../../hoc/context";
 
-export const modal = React.memo((props) => {
-	React.useEffect(() => {console.log("Modal")});
-
+export const modal = (props) => {
 	return <Context.Consumer>
 		{
 			context => <Aux>
@@ -25,6 +23,4 @@ export const modal = React.memo((props) => {
 			</Aux>
 		}
 	</Context.Consumer>
-}, (prevProps, nextProps) => {
-	return prevProps.children.key === nextProps.children.key;
-});
+};
