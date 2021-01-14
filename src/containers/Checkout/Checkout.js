@@ -6,7 +6,6 @@ import {contactData as ContactData} from "./ContactData/ContactData";
 
 export const checkout = props => {
   const [ingredients, setIngredients] = React.useState({});
-
   const [totalPrice, setTotalPrice] = React.useState(0);
 
   React.useEffect(() => {
@@ -14,7 +13,8 @@ export const checkout = props => {
 
     for (let params of new URLSearchParams(props.location.search).entries()) {
       if(params[0] === "price") {
-        setTotalPrice(params[1]);
+        setTotalPrice(+params[1]);
+        console.log(totalPrice);
       } else {
         ingredients[params[0]] = +params[1];
       }

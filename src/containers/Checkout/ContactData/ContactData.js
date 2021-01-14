@@ -7,15 +7,15 @@ import { instance } from "../../../axios-orders";
 import { spinner as Spinner } from "../../../components/UI/Spinner/Spinner";
 
 export const contactData = props => {
-  const [orderState, setOrderState] = React.useState({
+  const [order, setOrder] = React.useState({
     name: "",
     email: "",
     address: {
       street: "",
       postalCode: ""
     },
-    loading: false
   });
+  const [loading, setLoading] = React.useState(false);
 
   // 1. Set loading state to true so that rendering spinner in case cannot fetch data
   // 2. Create a data
@@ -24,10 +24,11 @@ export const contactData = props => {
   const handleOrder = (e) => {
     e.preventDefault();
 
-    setOrderState({ ...orderState, loading: true });  // 1
+    setLoading(true);  // 1
+
     const order = {                    // 2
       ingredients: props.ingredients,
-      price: props.totalPrice,
+      price: props.price,
       customer: {
         name: "Tuan Ngo",
         address: {
@@ -40,18 +41,23 @@ export const contactData = props => {
       deliveryMethod: "fastest"
     };
 
+    console.log(order);
+
     instance.post('/orders.json', order)  // 3
       .then(resolve => {
-        setOrderState({ ...orderState, loading: false });
+        setOrder({ ...order });
+        setLoading(false);
         props.history.push("/");
       })
-      .catch(error => setOrderState({ ...orderState, loading: false }));
+      .catch(error => {
+        setLoading(false);
+      });
   };
 
   return <div className={classes.ContactData}>
     <h4>Enter your Contact Data</h4>
     {
-      orderState.loading
+      loading
         ? <Spinner />
         : <form>
           <input className={classes.Input} type="text" name="name" placeholder="Your Name" />

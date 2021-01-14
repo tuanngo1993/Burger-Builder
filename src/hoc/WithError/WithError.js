@@ -7,12 +7,12 @@ let reqInterceptor;
 let resInterceptor;
 
 export const withError = (WrappedCompoenent, axios) => props => {
-  const [error, setError] = React.useState(null);
+  const [error, setError] = React.useState();
 
   // Call global request and response axios
   React.useEffect(() => {
     reqInterceptor = axios.interceptors.request.use(req => {
-      setError(null);
+      setError(null); 
       return req;
     });
 
