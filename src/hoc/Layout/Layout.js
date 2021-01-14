@@ -2,9 +2,9 @@ import React from "react";
 
 import classes from "./Layout.css";
 
-import { context as Context } from "../../hoc/context";
-import {toolbar as Toolbar} from "../Navigation/Toolbar/Toolbar";
-import {sideDrawer as SideDrawer} from "../Navigation/SideDrawer/SideDrawer";
+import { context as Context } from "../Context/Context";
+import {toolbar as Toolbar} from "../../components/Navigation/Toolbar/Toolbar";
+import {sideDrawer as SideDrawer} from "../../components/Navigation/SideDrawer/SideDrawer";
 
 export class Layout extends React.Component {
 	constructor(props) {
@@ -25,7 +25,8 @@ export class Layout extends React.Component {
 		return <Context.Provider 
 			value={{
 				onClick: this.handleToggleSideDrawer,
-				show: this.state.showSideDrawer
+        show: this.state.showSideDrawer,
+        
 			}}
 		>
 			<Toolbar />

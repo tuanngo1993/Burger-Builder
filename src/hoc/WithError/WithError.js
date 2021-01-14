@@ -1,44 +1,41 @@
 import React from "react";
 
-import { modal as Modal } from "../components/UI/Modal/Modal";
-import { context as Context } from "./context";
+import { modal as Modal } from "../../components/UI/Modal/Modal";
+import { context as Context } from "../Context/Context";
 
 let reqInterceptor;
 let resInterceptor;
 
 export const withError = (WrappedCompoenent, axios) => props => {
-  const [error, setErrorState] = React.useState({
-    error: null
-  })
+  const [error, setError] = React.useState(null);
 
   // Call global request and response axios
   React.useEffect(() => {
     reqInterceptor = axios.interceptors.request.use(req => {
-      setErrorState({ error: null });
+      setError(null);
       return req;
     });
 
     resInterceptor = axios.interceptors.response.use(res => res, error => {
-      setErrorState({ error: error });
+      setError(error);
     });
   }, []);
 
   // Should remove axios when unmount function to avoid overloading memory
   React.useEffect(() => {
     return () => {
-      console.log("will unmount", reqInterceptor, resInterceptor);
       axios.interceptors.request.eject(reqInterceptor);
       axios.interceptors.response.eject(resInterceptor);
     };
   },[]);
 
   const handleToggleModal = () => {
-    setErrorState({ error: null });
+    setError(null);
   };
 
-  return <Context.Provider value={{ show: error.error, onClick: handleToggleModal }}>
+  return <Context.Provider value={{ show: error, onClick: handleToggleModal }}>
     <Modal>
-      {error.error ? error.error.message : null}
+      {error ? error.message : null}
     </Modal>
     <WrappedCompoenent {...props} />
   </Context.Provider>;

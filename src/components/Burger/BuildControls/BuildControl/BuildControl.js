@@ -2,7 +2,7 @@ import React from "react";
 
 import classes from "./BuildControl.css";
 
-import { context as Context } from "../../../../hoc/context";
+import { context as Context } from "../../../../hoc/Context/Context";
 
 export const buildControl = props => <Context.Consumer>
 	{

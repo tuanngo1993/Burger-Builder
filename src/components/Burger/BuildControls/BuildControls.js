@@ -3,7 +3,7 @@ import React from "react";
 import classes from "./BuildControls.css";
 
 import {buildControl as BuildControl} from "./BuildControl/BuildControl";
-import {context as Context} from "../../../hoc/context";
+import {context as Context} from "../../../hoc/Context/Context";
 
 const controls = [
 	{label: "Salad", type: "salad"},

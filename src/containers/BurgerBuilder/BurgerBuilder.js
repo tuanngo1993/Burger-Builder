@@ -4,12 +4,12 @@ import { instance } from "../../axios-orders";
 
 import { burger as Burger } from "../../components/Burger/Burger";
 import { buildControls as BuildControls } from "../../components/Burger/BuildControls/BuildControls";
-import { context as Context } from "../../hoc/context";
+import { context as Context } from "../../hoc/Context/Context";
 import { modal as Modal } from "../../components/UI/Modal/Modal";
 import { orderSummary as OrderSummary } from "../../components/Burger/OrderSummary/OrderSummary";
 import { spinner as Spinner } from "../../components/UI/Spinner/Spinner";
-import { withError as WithError } from "../../hoc/withError";
-import { aux as Aux } from "../../hoc/Aux";
+import { withError as WithError } from "../../hoc/WithError/WithError";
+import { aux as Aux } from "../../hoc/Aux/Aux";
 
 const INGREDIENT_PRICE = {
   salad: 0.5,
@@ -22,7 +22,7 @@ class BurgerBuilder extends React.Component {
     super(props);
 
     this.state = {
-      ingredients: null,
+      ingredients: {},
       totalPrice: 0,
       purchasable: false,  // Disable or enable order button in Build Controls
       ordering: false,     // Open or close order modal
@@ -39,34 +39,25 @@ class BurgerBuilder extends React.Component {
   // 2. Set ingredients data to state
   componentDidMount() {
     instance.get("https://react-my-burger-48670-default-rtdb.firebaseio.com/%C3%ACngredients.json")  // NOTE: must add ".json" at the end of url
-      .then(response => this.setState({ ingredients: response.data }))
-      .catch(error => this.setState({error: true}));
+      .then(response => {
+        this.setState({ ingredients: response.data });
+        this.handleUpdatePurchase(response.data);
+      })
+      .catch(error => this.setState({error: true}))
   }
 
-  // 1. Set loading state to true so that rendering spinner in case cannot fetch data
-  // 2. Create a data
-  // 3. Post data to server, and catch error as well
-  // 4. Then set stop rendering spinner and close order modal
   handleOrderContinue() {
-    this.setState({ loading: true });  // 1
-    const order = {                    // 2
-      ingredients: this.state.ingredients, 
-      price: this.state.totalPrice,  
-      customer: {
-        name: "Tuan Ngo",
-        address: {
-          street: "79 Do Quang",
-          zipCode: "550000",
-          country: "Vietnam"
-        },
-        email: "tuan@test.com",
-      },
-      deliveryMethod: "fastest"
-    };
+    const queryParams = [];
+    for(let i in this.state.ingredients) {
+      queryParams.push(encodeURIComponent(i) + "=" + encodeURIComponent(this.state.ingredients[i]));
+    }
 
-    instance.post('/orders', order)  // 3
-      .then(resolve => this.setState({ loading: false, ordering: false }))
-      .catch(error => this.setState({ loading: false, ordering: false }));
+    queryParams.push("price=" + this.state.totalPrice);
+
+    this.props.history.push({
+      pathname: "/checkout",
+      search: "?" + queryParams.join("&")
+    });
   }
 
   // Switch value of ordering state to open or close order modal

@@ -2,7 +2,7 @@ import React from "react";
 
 import classes from "./DrawerToggle.css";
 
-import {context as Context} from "../../../../hoc/context";
+import {context as Context} from "../../../../hoc/Context/Context";
 
 
 export const drawerToggle = props => <Context.Consumer>

@@ -2,9 +2,9 @@ import React from "react";
 
 import classes from "./Modal.css";
 
-import { aux as Aux } from "../../../hoc/Aux";
+import { aux as Aux } from "../../../hoc/Aux/Aux";
 import { backdrop as Backdrop } from "../Backdrop/Backdrop";
-import {context as Context} from "../../../hoc/context";
+import {context as Context} from "../../../hoc/Context/Context";
 
 export const modal = (props) => {
 	return <Context.Consumer>

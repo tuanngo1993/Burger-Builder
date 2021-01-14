@@ -1,8 +1,8 @@
 import React from "react";
 
-import { aux as Aux } from "../../../hoc/Aux";
+import { aux as Aux } from "../../../hoc/Aux/Aux";
 import {button as Button} from "../../UI/Button/Button";
-import {context as Context} from "../../../hoc/context";
+import {context as Context} from "../../../hoc/Context/Context";
 
 export const orderSummary = props => {
 	const ingredientSummary = Object.keys(props.ingredients).map(

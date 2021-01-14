@@ -5,8 +5,8 @@ import classes from "./SideDrawer.css";
 import {logo as Logo} from "../../Logo/Logo";
 import {navigationItems as NavigationItems} from "../NavigationItems/NavigationItems";
 import {backdrop as Backdrop} from "../../UI/Backdrop/Backdrop"
-import {aux as Aux} from "../../../hoc/Aux";
-import {context as Context} from "../../../hoc/context";
+import {aux as Aux} from "../../../hoc/Aux/Aux";
+import {context as Context} from "../../../hoc/Context/Context";
 
 export const sideDrawer = props => {
 	const context = React.useContext(Context);

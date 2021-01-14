@@ -5,5 +5,5 @@ export const context = React.createContext({
 	onRemove: () => {},
 	onClick: () => {},
 	price: 0,
-	show: false
+  show: false,
 });
