@@ -22,7 +22,7 @@ class BurgerBuilder extends React.Component {
     super(props);
 
     this.state = {
-      ingredients: {},
+      ingredients: null,
       totalPrice: 0,
       purchasable: false,  // Disable or enable order button in Build Controls
       ordering: false,     // Open or close order modal
@@ -40,10 +40,11 @@ class BurgerBuilder extends React.Component {
   componentDidMount() {
     instance.get("https://react-my-burger-48670-default-rtdb.firebaseio.com/%C3%ACngredients.json")  // NOTE: must add ".json" at the end of url
       .then(response => {
+        
         this.setState({ ingredients: response.data });
         this.handleUpdatePurchase(response.data);
       })
-      .catch(error => this.setState({error: true}))
+      .catch(error => this.setState({error: true}));
   }
 
   handleOrderContinue() {
