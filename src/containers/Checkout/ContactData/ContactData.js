@@ -1,4 +1,5 @@
 import React from "react";
+import {connect} from "react-redux";
 
 import classes from "./ContactData.css";
 
@@ -7,7 +8,13 @@ import { instance } from "../../../axios-orders";
 import { spinner as Spinner } from "../../../components/UI/Spinner/Spinner";
 import {input as Input } from "../../../components/UI/Input/Input";
 
-export const contactData = props => {
+const mapStateToProps = state => {
+  return {
+    ingredients: state.ingredients
+  }
+};
+
+export const contactData = connect(mapStateToProps)(props => {
   const [order, setOrder] = React.useState({
     name: {
       elementType: "input",
@@ -159,4 +166,4 @@ export const contactData = props => {
         </form>
     }
   </div>;
-};
+});
