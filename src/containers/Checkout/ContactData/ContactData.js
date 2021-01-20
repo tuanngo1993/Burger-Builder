@@ -5,14 +5,73 @@ import classes from "./ContactData.css";
 import { button as Button } from "../../../components/UI/Button/Button";
 import { instance } from "../../../axios-orders";
 import { spinner as Spinner } from "../../../components/UI/Spinner/Spinner";
+import {input as Input } from "../../../components/UI/Input/Input";
 
 export const contactData = props => {
   const [order, setOrder] = React.useState({
-    name: "",
-    email: "",
-    address: {
-      street: "",
-      postalCode: ""
+    name: {
+      elementType: "input",
+      elementConfig: {
+        type: "text",
+        placeholder: "Name"
+      },
+      value: "",
+      validation: {
+        require: true,
+        minLength: 5
+      },
+      valid: false,
+      touched: false
+    },
+    street: {
+      elementType: "input",
+      elementConfig: {
+        type: "text",
+        placeholder: "Street"
+      },
+      value: "",
+      validation: {
+        require: true
+      },
+      valid: false,
+      touched: false
+    },
+    zipCode: {
+      elementType: "input",
+      elementConfig: {
+        type: "text",
+        placeholder: "ZIP Code"
+      },
+      value: "",
+      validation: {
+        require: true
+      },
+      valid: false,
+      touched: false
+    },
+    email: {
+      elementType: "input",
+      elementConfig: {
+        type: "text",
+        placeholder: "Your Email"
+      },
+      value: "",
+      validation: {
+        require: true
+      },
+      valid: false,
+      touched: false
+    },
+    delivery: {
+      elementType: "select",
+      elementConfig: {
+        options: [
+          {value: "fastest", displayValue: "Delivery fast"},
+          {value: "cheapest", displayValue: "Delivery slow"}
+        ],
+      },
+      validation: {},
+      valid: true
     },
   });
   const [loading, setLoading] = React.useState(false);
@@ -24,28 +83,20 @@ export const contactData = props => {
   const handleOrder = (e) => {
     e.preventDefault();
 
-    setLoading(true);  // 1
+    const formData = {}; // 2
 
-    const order = {                    // 2
-      ingredients: props.ingredients,
-      price: props.price,
-      customer: {
-        name: "Tuan Ngo",
-        address: {
-          street: "79 Do Quang",
-          zipCode: "550000",
-          country: "Vietnam"
-        },
-        email: "tuan@test.com",
-      },
-      deliveryMethod: "fastest"
+    for (let key in order) {
+      if(!order[key].valid) return;
+      formData[key] = order[key].value;
     };
 
-    console.log(order);
+    setLoading(true);  // 1
 
-    instance.post('/orders.json', order)  // 3
+    formData.ingredients = props.ingredients;
+    formData.price = props.price;
+
+    instance.post('/orders.json', formData)  // 3
       .then(resolve => {
-        setOrder({ ...order });
         setLoading(false);
         props.history.push("/");
       })
@@ -54,17 +105,57 @@ export const contactData = props => {
       });
   };
 
+  const handleChangeInput = (id, e) => {
+    let orderElement = {...order};
+    orderElement[id].value = e.target.value;
+    orderElement[id].valid = checkValidity(e.target.value, orderElement[id].validation);
+    orderElement[id].touched = true;
+    console.log(orderElement);
+
+    setOrder(orderElement);
+  };
+
+  const checkValidity = (value, rules) => {
+    let isValid = true;
+
+    if(rules.require) {
+      isValid = value.trim() !== "";
+    }
+
+    if(rules.minLength) {
+      isValid = value.length >= rules.minLength;
+    }
+
+    return isValid;
+  }
+
+  const formElementArray = [];
+  for (let key in order) {
+    formElementArray.push({
+      id: key,
+      config: order[key]
+    });
+  }
+
   return <div className={classes.ContactData}>
     <h4>Enter your Contact Data</h4>
     {
       loading
         ? <Spinner />
-        : <form>
-          <input className={classes.Input} type="text" name="name" placeholder="Your Name" />
-          <input className={classes.Input} type="email" name="email" placeholder="Your Email" />
-          <input className={classes.Input} type="text" name="street" placeholder="Street" />
-          <input className={classes.Input} type="text" name="postal" placeholder="Postal" />
-          <Button btnType="Success" onClick={handleOrder}>ORDER</Button>
+        : <form onSubmit={handleOrder}>
+          {
+            formElementArray.map(
+              element => <Input 
+                key={element.id}
+                inputtype={element.config.elementType} 
+                elementconfig={element.config.elementConfig}
+                value={element.config.value}
+                invalid={!element.config.valid}
+                touched={element.config.touched}
+                onChange={handleChangeInput.bind(this, element.id)} />
+            )
+          }
+          <Button btnType="Success">ORDER</Button>
         </form>
     }
   </div>;
