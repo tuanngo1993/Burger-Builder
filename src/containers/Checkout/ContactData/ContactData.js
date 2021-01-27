@@ -1,20 +1,31 @@
 import React from "react";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 
 import classes from "./ContactData.css";
 
 import { button as Button } from "../../../components/UI/Button/Button";
 import { instance } from "../../../axios-orders";
 import { spinner as Spinner } from "../../../components/UI/Spinner/Spinner";
-import {input as Input } from "../../../components/UI/Input/Input";
+import { input as Input } from "../../../components/UI/Input/Input";
+import { withError as WithError } from "../../../hoc/WithError/WithError";
+import * as orderBurgerActions from "../../../store/actions/index";
 
 const mapStateToProps = state => {
   return {
-    ingredients: state.ingredients
+    ingredients: state.burgerBuilder.ingredients,
+    price: state.burgerBuilder.totalPrice,
+    loading: state.order.loading,
+    order: state.order.order
   }
 };
 
-export const contactData = connect(mapStateToProps)(props => {
+const mapDispatchToProps = dispatch => {
+  return {
+    handleOrderBurger: (orderData) => dispatch(orderBurgerActions.purchaseBurger(orderData)),
+  };
+};
+
+export const contactData = connect(mapStateToProps, mapDispatchToProps)(WithError(props => {
   const [order, setOrder] = React.useState({
     name: {
       elementType: "input",
@@ -73,19 +84,17 @@ export const contactData = connect(mapStateToProps)(props => {
       elementType: "select",
       elementConfig: {
         options: [
-          {value: "fastest", displayValue: "Delivery fast"},
-          {value: "cheapest", displayValue: "Delivery slow"}
+          { value: "fastest", displayValue: "Delivery fast" },
+          { value: "cheapest", displayValue: "Delivery slow" }
         ],
       },
+      value: "fastest",
       validation: {},
       valid: true
     },
   });
-  const [loading, setLoading] = React.useState(false);
 
-  // 1. Set loading state to true so that rendering spinner in case cannot fetch data
   // 2. Create a data
-  // 3. Post data to server, and catch error as well
   // 4. Then set stop rendering spinner and close order modal
   const handleOrder = (e) => {
     e.preventDefault();
@@ -93,27 +102,20 @@ export const contactData = connect(mapStateToProps)(props => {
     const formData = {}; // 2
 
     for (let key in order) {
-      if(!order[key].valid) return;
+      if (!order[key].valid) return;
       formData[key] = order[key].value;
     };
 
-    setLoading(true);  // 1
 
     formData.ingredients = props.ingredients;
     formData.price = props.price;
 
-    instance.post('/orders.json', formData)  // 3
-      .then(resolve => {
-        setLoading(false);
-        props.history.push("/");
-      })
-      .catch(error => {
-        setLoading(false);
-      });
+
+    props.handleOrderBurger(formData);
   };
 
   const handleChangeInput = (id, e) => {
-    let orderElement = {...order};
+    let orderElement = { ...order };
     orderElement[id].value = e.target.value;
     orderElement[id].valid = checkValidity(e.target.value, orderElement[id].validation);
     orderElement[id].touched = true;
@@ -125,11 +127,11 @@ export const contactData = connect(mapStateToProps)(props => {
   const checkValidity = (value, rules) => {
     let isValid = true;
 
-    if(rules.require) {
+    if (rules.require) {
       isValid = value.trim() !== "";
     }
 
-    if(rules.minLength) {
+    if (rules.minLength) {
       isValid = value.length >= rules.minLength;
     }
 
@@ -147,14 +149,14 @@ export const contactData = connect(mapStateToProps)(props => {
   return <div className={classes.ContactData}>
     <h4>Enter your Contact Data</h4>
     {
-      loading
+      props.loading
         ? <Spinner />
         : <form onSubmit={handleOrder}>
           {
             formElementArray.map(
-              element => <Input 
+              element => <Input
                 key={element.id}
-                inputtype={element.config.elementType} 
+                inputtype={element.config.elementType}
                 elementconfig={element.config.elementConfig}
                 value={element.config.value}
                 invalid={!element.config.valid}
@@ -166,4 +168,4 @@ export const contactData = connect(mapStateToProps)(props => {
         </form>
     }
   </div>;
-});
+}, instance))
