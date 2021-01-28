@@ -1,39 +1,36 @@
 import React from "react";
+import { connect } from "react-redux";
 
 import classes from "./Layout.css";
 
 import { context as Context } from "../Context/Context";
-import {toolbar as Toolbar} from "../../components/Navigation/Toolbar/Toolbar";
-import {sideDrawer as SideDrawer} from "../../components/Navigation/SideDrawer/SideDrawer";
+import { toolbar as Toolbar } from "../../components/Navigation/Toolbar/Toolbar";
+import { sideDrawer as SideDrawer } from "../../components/Navigation/SideDrawer/SideDrawer";
 
-export class Layout extends React.Component {
-	constructor(props) {
-		super(props);
+const mapStateToProps = state => {
+  return {
+    isAuthenticated: !!state.auth.token
+  };
+};
 
-		this.state = {
-			showSideDrawer: false
-		};
+export const Layout = connect(mapStateToProps)(props => {
+  const [showSideDrawer, setShowSideDrawer] = React.useState(false);
 
-		this.handleToggleSideDrawer = this.handleToggleSideDrawer.bind(this);
-	}
+  const handleToggleSideDrawer = () => {
+    setShowSideDrawer(!showSideDrawer);
+  };
 
-	handleToggleSideDrawer() {
-		this.setState((prevState, _) => ({showSideDrawer: !prevState.showSideDrawer}));
-	}
-
-	render() {
-		return <Context.Provider 
-			value={{
-				onClick: this.handleToggleSideDrawer,
-        show: this.state.showSideDrawer,
-        
-			}}
-		>
-			<Toolbar />
-			<SideDrawer />
-			<main className={classes.Content}>
-				{this.props.children}
-			</main>
-		</Context.Provider>;
-	}
-}
+  return <Context.Provider
+    value={{
+      onClick: handleToggleSideDrawer,
+      show: showSideDrawer,
+      isAuthenticated: props.isAuthenticated
+    }}
+  >
+    <Toolbar />
+    <SideDrawer />
+    <main className={classes.Content}>
+      {props.children}
+    </main>
+  </Context.Provider>;
+});

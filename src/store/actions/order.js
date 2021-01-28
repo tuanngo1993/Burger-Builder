@@ -16,22 +16,24 @@ export const purchaseBurgerFailed = (error) => {
   };
 };
 
-export const purchaseBurgerStart = (error) => {
+export const purchaseBurgerStart = () => {
   return {
-    type: actionTypes.PURCHASE_BURGER_START,
-    error: error
+    type: actionTypes.PURCHASE_BURGER_START
   };
 };
 
-export const purchaseBurger = (orderData) => {
+export const purchaseBurger = (orderData, token) => {
   return dispatch => {
+    console.log(token);
     dispatch(purchaseBurgerStart());
-    instance.post('/orders.json', orderData)  // 3
+    instance.post('/orders.json?auth=' + token, orderData)
       .then(response => {
+        console.log(response);
         dispatch(purchaseBurgerSuccess(response.data.name, orderData));
       })
       .catch(error => {
-        dispatch(purchaseBurgerFailed(error));
+        console.log("failed");
+        dispatch(purchaseBurgerFailed(error.response.data.error));
       });
   };
 };
@@ -62,21 +64,23 @@ export const fetchOrdersStart = () => {
   };
 };
 
-export const fetchOrders = dispatch => {
+export const fetchOrders = (token, userId) => {
   return dispatch => {
     dispatch(fetchOrdersStart());
-    instance.get("/orders.json")
-    .then(response => {
-      const fetchedOrders = [];
+    // check if passed auth through token key before fetch orders
+    const queryParams = "?auth=" + token + '&orderBy="userId"&equalTo="' + userId + '"';
+    instance.get("/orders.json" + queryParams)
+      .then(response => {
+        const fetchedOrders = [];
 
-      for (const key in response.data) {
-        fetchedOrders.push({ ...response.data[key], id: key });
-      }
+        for (const key in response.data) {
+          fetchedOrders.push({ ...response.data[key], id: key });
+        }
 
-      dispatch(fetchOrdersSuccess(fetchedOrders));
-    })
-    .catch(error => {
-      dispatch(fetchOrdersFailed(error));
-    });
+        dispatch(fetchOrdersSuccess(fetchedOrders));
+      })
+      .catch(error => {
+        dispatch(fetchOrdersFailed(error));
+      });
   };
 };

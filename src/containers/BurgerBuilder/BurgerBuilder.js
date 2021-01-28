@@ -38,7 +38,12 @@ class BurgerBuilder extends React.Component {
 
   // Switch value of ordering state to open or close order modal
   handleToggleOrderModal() {
-    this.setState((prevState, _) => ({ ordering: !prevState.ordering }));
+    if(this.props.isAuthenticated) {
+      this.setState((prevState, _) => ({ ordering: !prevState.ordering }));
+    } else {
+      this.props.handleSetRedirectPath("/checkout");
+      this.props.history.push("/auth");
+    }
   }
 
   // Check whether ingredients has any or not at all ? 
@@ -86,7 +91,8 @@ class BurgerBuilder extends React.Component {
         onRemove: this.props.handleRemoveIngredient,
         onClick: this.handleToggleOrderModal,
         price: this.props.totalPrice,
-        show: this.state.ordering
+        show: this.state.ordering,
+        isAuthenticated: this.props.isAuthenticated
       }}
     >
       <Modal>
@@ -101,7 +107,8 @@ const mapStateToProps = state => {
   return {
     ingredients: state.burgerBuilder.ingredients,
     totalPrice: state.burgerBuilder.totalPrice,
-    error: state.burgerBuilder.error
+    error: state.burgerBuilder.error,
+    isAuthenticated: !!state.auth.token
   }
 };
 
@@ -110,7 +117,8 @@ const mapDispatchToProps = dispatch => {
     handleAddIngredient: (ingredientName) => dispatch(actions.addIngredient(ingredientName)),
     handleRemoveIngredient: (ingredientName) => dispatch(actions.removeIngredient(ingredientName)),
     handleInitIngredients: () => dispatch(actions.initIngredients()),
-    handlePurchaseInit: () => dispatch(actions.purchaseInit())
+    handlePurchaseInit: () => dispatch(actions.purchaseInit()),
+    handleSetRedirectPath: (path) => dispatch(actions.setAuthRedirectPath(path))
   }
 };
 

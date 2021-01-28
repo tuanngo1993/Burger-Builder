@@ -8,20 +8,22 @@ import { instance } from "../../../axios-orders";
 import { spinner as Spinner } from "../../../components/UI/Spinner/Spinner";
 import { input as Input } from "../../../components/UI/Input/Input";
 import { withError as WithError } from "../../../hoc/WithError/WithError";
-import * as orderBurgerActions from "../../../store/actions/index";
+import * as actions from "../../../store/actions/index";
 
 const mapStateToProps = state => {
   return {
     ingredients: state.burgerBuilder.ingredients,
     price: state.burgerBuilder.totalPrice,
     loading: state.order.loading,
-    order: state.order.order
+    order: state.order.order,
+    token: state.auth.token,
+    userId: state.auth.userId
   }
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleOrderBurger: (orderData) => dispatch(orderBurgerActions.purchaseBurger(orderData)),
+    handleOrderBurger: (orderData, token) => dispatch(actions.purchaseBurger(orderData, token)),
   };
 };
 
@@ -109,9 +111,9 @@ export const contactData = connect(mapStateToProps, mapDispatchToProps)(WithErro
 
     formData.ingredients = props.ingredients;
     formData.price = props.price;
+    formData.userId = props.userId;
 
-
-    props.handleOrderBurger(formData);
+    props.handleOrderBurger(formData, props.token);
   };
 
   const handleChangeInput = (id, e) => {
@@ -119,7 +121,6 @@ export const contactData = connect(mapStateToProps, mapDispatchToProps)(WithErro
     orderElement[id].value = e.target.value;
     orderElement[id].valid = checkValidity(e.target.value, orderElement[id].validation);
     orderElement[id].touched = true;
-    console.log(orderElement);
 
     setOrder(orderElement);
   };
@@ -137,6 +138,8 @@ export const contactData = connect(mapStateToProps, mapDispatchToProps)(WithErro
 
     return isValid;
   }
+
+
 
   const formElementArray = [];
   for (let key in order) {
@@ -159,8 +162,8 @@ export const contactData = connect(mapStateToProps, mapDispatchToProps)(WithErro
                 inputtype={element.config.elementType}
                 elementconfig={element.config.elementConfig}
                 value={element.config.value}
-                invalid={!element.config.valid}
-                touched={element.config.touched}
+                invalid={!element.config.valid ? 1 : 0}
+                touched={element.config.touched ? 1 : 0}
                 onChange={handleChangeInput.bind(this, element.id)} />
             )
           }

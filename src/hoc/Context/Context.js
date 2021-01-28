@@ -6,4 +6,5 @@ export const context = React.createContext({
 	onClick: () => {},
 	price: 0,
   show: false,
+  isAuthenticated: false
 });

@@ -30,7 +30,8 @@ export const fetchIngredientsFailed = () => {
 
 export const initIngredients = () => {
   return dispatch => {
-    instance.get("https://react-my-burger-48670-default-rtdb.firebaseio.com/%C3%ACngredients.json")  // NOTE: must add ".json" at the end of url
+    // get from link: https://console.firebase.google.com/u/0/project/react-my-burger-48670/database/react-my-burger-48670-default-rtdb/data
+    instance.get("https://react-my-burger-48670-default-rtdb.firebaseio.com/ingredients.json")  // NOTE: must add ".json" at the end of url
       .then(response => {
         dispatch(setIngredients(response.data));
       })

@@ -28,7 +28,7 @@ export const buildControls = props => <Context.Consumer>
 				disabled={!props.purchasable}
 				onClick={context.onClick}
 			>
-				ORDER BUTTON
+				{context.isAuthenticated ? "ORDER BUTTON" : "SIGN UP TO ORDER"}
 			</button>
 		</div>
 	}

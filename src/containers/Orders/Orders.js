@@ -10,23 +10,23 @@ import * as actions from "../../store/actions/index";
 const mapStateToProps = state => {
   return {
     orders: state.order.orders,
-    loading: state.order.loading
+    loading: state.order.loading,
+    token: state.auth.token,
+    userId: state.auth.userId
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleFetchOrders: () => dispatch(actions.fetchOrders())
+    handleFetchOrders: (token, userId) => dispatch(actions.fetchOrders(token, userId))
   };
 };
 
 export const orders = connect(mapStateToProps, mapDispatchToProps)(WithError(props => {
 
   React.useEffect(() => {
-    props.handleFetchOrders();
+    props.handleFetchOrders(props.token, props.userId);
   }, []);
-
-  console.log(props.loading, props.orders);
 
   return <div>
     {
