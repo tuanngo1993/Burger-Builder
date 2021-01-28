@@ -8,7 +8,7 @@ import { aux as Aux } from "../../../hoc/Aux/Aux";
 
 export const navigationItems = props => <Context.Consumer>
   {
-    context => <ul className={classes.NavigationItems}>
+    context => <ul className={classes.NavigationItems} onClick={context.onClick}>
       <Navigationitem link="/">Burgerr Builder</Navigationitem>
       {
         context.isAuthenticated
