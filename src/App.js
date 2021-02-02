@@ -3,7 +3,7 @@ import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 
 import { Layout } from "./hoc/Layout/Layout";
-import BurgerBuilder from "./containers/BurgerBuilder/BurgerBuilder";
+import { BurgerBuilder } from "./containers/BurgerBuilder/BurgerBuilder";
 import { checkout as Checkout } from "./containers/Checkout/Checkout";
 import { orders as Orders } from "./containers/Orders/Orders";
 import { Auth } from "./containers/Auth/Auth";

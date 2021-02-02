@@ -1,5 +1,5 @@
 import React from "react";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { instance } from "../../axios-orders";
 import * as actions from "../../store/actions/index";
@@ -12,114 +12,95 @@ import { orderSummary as OrderSummary } from "../../components/Burger/OrderSumma
 import { spinner as Spinner } from "../../components/UI/Spinner/Spinner";
 import { withError as WithError } from "../../hoc/WithError/WithError";
 import { aux as Aux } from "../../hoc/Aux/Aux";
-class BurgerBuilder extends React.Component {
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      ordering: false,     // Open or close order modal
-    };
+export const BurgerBuilder = WithError((props => {
+  const [ordering, setOrdering] = React.useState(false); // Open or close order modal
+  const ingredients = useSelector(state => state.burgerBuilder.ingredients);
+  const totalPrice = useSelector(state => state.burgerBuilder.totalPrice);
+  const error = useSelector(state => state.burgerBuilder.error);
+  const isAuthenticated = useSelector(state => !!state.auth.token);
 
-    this.handleToggleOrderModal = this.handleToggleOrderModal.bind(this);
-    this.handleOrderContinue = this.handleOrderContinue.bind(this);
-  }
+  const dispatch = useDispatch();
+  const handleAddIngredient = (ingredientName) => dispatch(actions.addIngredient(ingredientName));
+  const handleRemoveIngredient = (ingredientName) => dispatch(actions.removeIngredient(ingredientName));
+  const handleInitIngredients = () => dispatch(actions.initIngredients());
+  const handlePurchaseInit = () => dispatch(actions.purchaseInit());
+  const handleSetRedirectPath = (path) => dispatch(actions.setAuthRedirectPath(path));
+
   // 1. Fetch the ingredients data from server
   // 2. Set ingredients data to state
-  componentDidMount() {
-    this.props.handleInitIngredients();
-  }
+  React.useEffect(() => {
+    handleInitIngredients();
+  }, []);
 
-  handleOrderContinue() {
-    this.props.handlePurchaseInit();
-    this.props.history.push({
+  const handleOrderContinue = () => {
+    handlePurchaseInit();
+    props.history.push({
       pathname: "/checkout"
     });
-  }
+  };
 
   // Switch value of ordering state to open or close order modal
-  handleToggleOrderModal() {
-    if(this.props.isAuthenticated) {
-      this.setState((prevState, _) => ({ ordering: !prevState.ordering }));
+  const handleToggleOrderModal = () => {
+    if (isAuthenticated) {
+      setOrdering(prevOrdering => !prevOrdering);
     } else {
-      this.props.handleSetRedirectPath("/checkout");
-      this.props.history.push("/auth");
+      handleSetRedirectPath("/checkout");
+      props.history.push("/auth");
     }
-  }
+  };
 
   // Check whether ingredients has any or not at all ? 
   // Yes: set purchasable state to true
   // No: set purchasable state to false
-  handleUpdatePurchase(ingredients) {
+  const handleUpdatePurchase = (ingredients) => {
     const sum = Object.keys(ingredients).map(
       ingredient => ingredients[ingredient]
     ).reduce((sum, price) => sum + price, 0);
 
-    return sum > 0 ;
+    return sum > 0;
+  };
+
+  const disableInfo = { ...ingredients };
+
+  // Turn into boolean array
+  // True: it is fine to enable minus button
+  // False: disable the minus button in Build Control
+  for (let key in disableInfo) {
+    disableInfo[key] = disableInfo[key] <= 0;
   }
 
-  render() {
-    const disableInfo = { ...this.props.ingredients };
+  let orderSummary = null;
+  let burger = error ? <p>Cannot load the ingredients!!</p> : <Spinner />;
 
-    // Turn into boolean array
-    // True: it is fine to enable minus button
-    // False: disable the minus button in Build Control
-    for (let key in disableInfo) {
-      disableInfo[key] = disableInfo[key] <= 0;
-    }
-
-    let orderSummary = null;
-    let burger = this.props.error ? <p>Cannot load the ingredients!!</p> : <Spinner />;
-
-    if (this.props.ingredients) {
-      burger = <Aux>
-        <Burger ingredients={this.props.ingredients} />
-        <BuildControls
-          disableInfo={disableInfo}
-          purchasable={this.handleUpdatePurchase(this.props.ingredients)}
-        />;
-      </Aux>
-      orderSummary = <OrderSummary key={"order-summary"} ingredients={this.props.ingredients} onClick={this.handleOrderContinue} />;
-    }
-
-    if (this.state.loading) {
-      orderSummary = <Spinner />;
-    }
-
-    return <Context.Provider
-      value={{
-        onAdd: this.props.handleAddIngredient,
-        onRemove: this.props.handleRemoveIngredient,
-        onClick: this.handleToggleOrderModal,
-        price: this.props.totalPrice,
-        show: this.state.ordering,
-        isAuthenticated: this.props.isAuthenticated
-      }}
-    >
-      <Modal>
-        {orderSummary}
-      </Modal>
-      {burger}
-    </Context.Provider>;
+  if (ordering) {
+    orderSummary = <Spinner />;
   }
-}
 
-const mapStateToProps = state => {
-  return {
-    ingredients: state.burgerBuilder.ingredients,
-    totalPrice: state.burgerBuilder.totalPrice,
-    error: state.burgerBuilder.error,
-    isAuthenticated: !!state.auth.token
+  if (ingredients) {
+    burger = <Aux>
+      <Burger ingredients={ingredients} />
+      <BuildControls
+        disableInfo={disableInfo}
+        purchasable={handleUpdatePurchase(ingredients)}
+      />;
+    </Aux>
+    orderSummary = <OrderSummary key={"order-summary"} ingredients={ingredients} onClick={handleOrderContinue} />;
   }
-};
 
-const mapDispatchToProps = dispatch => {
-  return {
-    handleAddIngredient: (ingredientName) => dispatch(actions.addIngredient(ingredientName)),
-    handleRemoveIngredient: (ingredientName) => dispatch(actions.removeIngredient(ingredientName)),
-    handleInitIngredients: () => dispatch(actions.initIngredients()),
-    handlePurchaseInit: () => dispatch(actions.purchaseInit()),
-    handleSetRedirectPath: (path) => dispatch(actions.setAuthRedirectPath(path))
-  }
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(WithError(BurgerBuilder, instance));
+  return <Context.Provider
+    value={{
+      onAdd: handleAddIngredient,
+      onRemove: handleRemoveIngredient,
+      onClick: handleToggleOrderModal,
+      price: totalPrice,
+      show: ordering,
+      isAuthenticated: isAuthenticated
+    }}
+  >
+    <Modal>
+      {orderSummary}
+    </Modal>
+    {burger}
+  </Context.Provider>;
+}), instance);

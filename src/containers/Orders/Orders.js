@@ -32,7 +32,7 @@ export const orders = connect(mapStateToProps, mapDispatchToProps)(WithError(pro
     {
       props.loading
         ? <Spinner />
-        : props.orders.map(order => <Order key={order.id} ingredients={order.ingredients} price={order.price} />)
+        : props.orders.map((order, index )=> <Order key={index} ingredients={order.ingredients} price={order.price} />)
     }
   </div>;
 }, instance));
